@@ -79,13 +79,17 @@ def getUser(request, UserId):
         })
 
 
-@api_view(['PUT', 'DELETE'])
+@api_view(['POST', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def editUser(request, UserId):
 
     user = getItem(UserInfo, UserId, 'one')
 
-    if request.method == 'PUT':
+    if request.method == 'POST':
+        for [key, value] in request.data.items():
+            print(f'{key}: {value}')
+
+    elif request.method == 'PUT':
 
         serializer = UserInfoSerializer(user, data=request.data['user'])
 
@@ -99,3 +103,4 @@ def editUser(request, UserId):
     elif request.method == 'DELETE':
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
