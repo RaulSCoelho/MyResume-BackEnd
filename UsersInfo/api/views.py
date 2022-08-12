@@ -110,24 +110,24 @@ def editUser(request, UserId):
             else:
                 return Response(model.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        userInfoSerializer = UserInfoSerializer(user, data=request.data.user)
+        userInfoSerializer = UserInfoSerializer(user, data=request.data['user'])
         isValid(userInfoSerializer)
         addressSerializer = AddressSerializer(
-            address, data=request.data.address)
+            address, data=request.data['address'])
         isValid(addressSerializer)
         socialMediaSerializer = SocialMediaSerializer(
-            socialMedia, data=request.data.socialMedia)
+            socialMedia, data=request.data['socialMedias'])
         isValid(socialMediaSerializer)
         qualificationSerializer = QualificationSerializer(
-            qualification, data=request.data.qualification)
+            qualification, data=request.data['qualifications'])
         isValid(qualificationSerializer)
-        skillSerializer = SkillSerializer(skill, data=request.data.skill)
+        skillSerializer = SkillSerializer(skill, data=request.data['skills'])
         isValid(skillSerializer)
         experienceSerializer = ExperienceSerializer(
-            experience, data=request.data.experience)
+            experience, data=request.data['experience'])
         isValid(experienceSerializer)
         educationSerializer = EducationSerializer(
-            education, data=request.data.education)
+            education, data=request.data['education'])
         isValid(educationSerializer)
 
         return Response({
