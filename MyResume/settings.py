@@ -1,21 +1,24 @@
 from datetime import timedelta
 from pathlib import Path
+import django_heroku
+import dj_database_url
 import os
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-MEDIA_URL = '/Photos/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "Photos")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)&ve4aq^dnzjz4)5l#x20#5nx4!_d=2sco!^rn5u0y+!!hbu=x'
+SECRET_KEY = 'django-insecure-o((cps5fed$tq!z+!r457-2lvzqij#t3!qg0yw$!i&x4wf)ef%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://raulresume.herokuapp.com', 'http://localhost:3000']
+
+# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -70,9 +73,7 @@ SIMPLE_JWT = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-
     'corsheaders.middleware.CorsMiddleware',
-
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -103,37 +104,18 @@ WSGI_APPLICATION = 'MyResume.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
-import pymysql
-pymysql.install_as_MySQLdb()
-import paramiko
-from sshtunnel import SSHTunnelForwarder
-
-mypkey = paramiko.RSAKey.from_private_key_file(f'{BASE_DIR}/DBConnection/id_rsa')
-
-ssh_tunnel = SSHTunnelForwarder(
-    ('150.230.94.215', 22),
-    ssh_pkey=mypkey,
-    ssh_username='opc',
-    remote_bind_address=('localhost', 3306),
-)
-ssh_tunnel.start()
+# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'localhost',
-        'PORT': ssh_tunnel.local_bind_port,
-        'NAME': 'MyResume',
-        'USER': 'root',
-        'PASSWORD': 'Rms122716!',
-    },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 
 # Password validation
-# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -152,7 +134,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.0/topics/i18n/
+# https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -164,14 +146,18 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
+# https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
+# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+django_heroku.settings(locals())
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True

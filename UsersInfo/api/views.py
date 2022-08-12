@@ -35,21 +35,21 @@ def Users(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+def getItem(model, key, type):
+    if type == 'one':
+        try:
+            return model.objects.get(User_id=key)
+        except model.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    elif type == 'many':
+        try:
+            return model.objects.filter(User_id=key)
+        except model.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
 @api_view(['GET'])
-def getUser(request, UserId):   
-
-    def getItem(model, key, type):
-        if type == 'one':
-            try:
-                return model.objects.get(User_id=key)
-            except model.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-        elif type == 'many':
-            try:
-                return model.objects.filter(User_id=key)
-            except model.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-
+def getUser(request, UserId):
+    
     user = getItem(UserInfo, UserId, 'one')
     address = getItem(Address, UserId, 'many')
     socialMedia = getItem(SocialMedia, UserId, 'many')
@@ -83,69 +83,19 @@ def getUser(request, UserId):
 @permission_classes([IsAuthenticated])
 def editUser(request, UserId):
 
-    def getItem(model, key, type):
-        if type == 'one':
-            try:
-                return model.objects.get(User_id=key)
-            except model.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-        elif type == 'many':
-            try:
-                return model.objects.filter(User_id=key)
-            except model.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-
     user = getItem(UserInfo, UserId, 'one')
-    address = getItem(Address, UserId, 'many')
-    socialMedia = getItem(SocialMedia, UserId, 'many')
-    qualification = getItem(Qualification, UserId, 'many')
-    skill = getItem(Skill, UserId, 'many')
-    experience = getItem(Experience, UserId, 'many')
-    education = getItem(Education, UserId, 'many')
 
     if request.method == 'PUT':
-        def isValid(model):
-            if model.is_valid():
-                model.save()
-            else:
-                return Response(model.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        userInfoSerializer = UserInfoSerializer(user, data=request.data['user'])
-        isValid(userInfoSerializer)
-        addressSerializer = AddressSerializer(
-            address, data=request.data['address'])
-        isValid(addressSerializer)
-        socialMediaSerializer = SocialMediaSerializer(
-            socialMedia, data=request.data['socialMedias'])
-        isValid(socialMediaSerializer)
-        qualificationSerializer = QualificationSerializer(
-            qualification, data=request.data['qualifications'])
-        isValid(qualificationSerializer)
-        skillSerializer = SkillSerializer(skill, data=request.data['skills'])
-        isValid(skillSerializer)
-        experienceSerializer = ExperienceSerializer(
-            experience, data=request.data['experience'])
-        isValid(experienceSerializer)
-        educationSerializer = EducationSerializer(
-            education, data=request.data['education'])
-        isValid(educationSerializer)
+        serializer = UserInfoSerializer(user, data=request.data['user'])
 
-        return Response({
-            'user': userInfoSerializer.data,
-            'address': addressSerializer.data,
-            'socialMedias': socialMediaSerializer.data,
-            'qualifications': qualificationSerializer.data,
-            'skills': skillSerializer.data,
-            'experience': experienceSerializer.data,
-            'education': educationSerializer.data,
-        })
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.data)
 
     elif request.method == 'DELETE':
         user.delete()
-        address.delete()
-        socialMedia.delete()
-        qualification.delete()
-        skill.delete()
-        experience.delete()
-        education.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
