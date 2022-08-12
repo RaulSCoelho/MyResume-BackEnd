@@ -105,10 +105,21 @@ WSGI_APPLICATION = 'MyResume.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+import sys
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3'
+    }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'd9u8e5s7c63j9u',
+        'USER': 'kkspnagkkvndds',
+        'PASSWORD': 'cc310a43c32ae024a61155866e5a9383b1e8a0d088a2041836b6a2d55169fcee',
+        'HOST': 'ec2-54-147-33-38.compute-1.amazonaws.com',
+        'PORT':  '5432',
     }
 }
 
