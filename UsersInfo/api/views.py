@@ -2,7 +2,7 @@ from ..models import UserInfo, Address, SocialMedia, Qualification, Skill, Exper
 from .serializers import UserInfoSerializer, AddressSerializer, SocialMediaSerializer, QualificationSerializer, SkillSerializer, ExperienceSerializer, EducationSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -20,6 +20,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
+# region ALL THE USERS LIST
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def Users(request):
@@ -33,23 +34,26 @@ def Users(request):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+# endregion
 
 
-def getItem(model, key, type):
-    if type == 'one':
-        try:
-            return model.objects.get(User_id=key)
-        except model.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-    elif type == 'many':
-        try:
-            return model.objects.filter(User_id=key)
-        except model.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+# region ONLY ONE USER
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def User(request, UserId):
 
-@api_view(['GET'])
-def getUser(request, UserId):
-    
+    def getItem(model, key, type):
+        if type == 'one':
+            try:
+                return model.objects.get(User_id=key)
+            except model.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        elif type == 'many':
+            try:
+                return model.objects.filter(User_id=key)
+            except model.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
     user = getItem(UserInfo, UserId, 'one')
     address = getItem(Address, UserId, 'many')
     socialMedia = getItem(SocialMedia, UserId, 'many')
@@ -78,14 +82,7 @@ def getUser(request, UserId):
             'education': educationSerializer.data,
         })
 
-
-@api_view(['POST', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
-def editUser(request, UserId):
-
-    user = getItem(UserInfo, UserId, 'one')
-
-    if request.method == 'POST':
+    elif request.method == 'POST':
         for [key, value] in request.data.items():
             print(f'{key}: {value}')
 
@@ -103,4 +100,4 @@ def editUser(request, UserId):
     elif request.method == 'DELETE':
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
+# endregion
