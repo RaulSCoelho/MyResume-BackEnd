@@ -4,12 +4,10 @@ import django_heroku
 import dj_database_url
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 PRODUCTION = os.environ.get('DATABASE_URL') != None
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -105,10 +103,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MyResume.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases 
-
 DATABASE_URL = 'postgres://nvmrkzxjqokiur:b606b6ed10629ff14d9bd9688b8e73b369ced7a098d37f16ed27b9619db35a06@ec2-34-193-44-192.compute-1.amazonaws.com:5432/ddmrefnj2n2950'
 
 DATABASES = {
@@ -120,9 +114,6 @@ DATABASES['default'] = dj_database_url.config(default=DATABASE_URL)
 
 if PRODUCTION:
     DATABASES['default'] = dj_database_url.config()
-
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -138,10 +129,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
