@@ -42,28 +42,22 @@ def Users(request):
 @permission_classes([IsAuthenticatedOrReadOnly])
 def User(request, UserId):
 
-    def getItem(model, key, type):
-        if type == 'one':
-            try:
-                return model.objects.get(User_id=key)
-            except model.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-        elif type == 'many':
-            try:
-                return model.objects.filter(User_id=key)
-            except model.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+    def getItem(model, key):
+        try:
+            return model.objects.filter(User_id=key)
+        except model.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-    user = getItem(UserInfo, UserId, 'one')
-    address = getItem(Address, UserId, 'many')
-    socialMedia = getItem(SocialMedia, UserId, 'many')
-    qualification = getItem(Qualification, UserId, 'many')
-    skill = getItem(Skill, UserId, 'many')
-    experience = getItem(Experience, UserId, 'many')
-    education = getItem(Education, UserId, 'many')
+    user = getItem(UserInfo, UserId)
+    address = getItem(Address, UserId)
+    socialMedia = getItem(SocialMedia, UserId)
+    qualification = getItem(Qualification, UserId)
+    skill = getItem(Skill, UserId)
+    experience = getItem(Experience, UserId)
+    education = getItem(Education, UserId)
 
     if request.method == 'GET':
-        userInfoSerializer = UserInfoSerializer(user)
+        userInfoSerializer = UserInfoSerializer(user, many=True)
         addressSerializer = AddressSerializer(address, many=True)
         socialMediaSerializer = SocialMediaSerializer(socialMedia, many=True)
         qualificationSerializer = QualificationSerializer(

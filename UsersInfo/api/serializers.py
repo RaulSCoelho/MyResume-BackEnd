@@ -6,7 +6,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInfo
         fields = [
-            'User_id',  
+            'User_id', 
+            'Lang',
             'FirstName',
             'LastName',
             'BirthDate',
@@ -15,10 +16,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
             'CPF',
             'Citizenship',
             'MaritalStatus',
-            'Profession',
-            'Education',
             'About',
-            'Experience'
         ]
 
 
@@ -53,6 +51,7 @@ class QualificationSerializer(serializers.ModelSerializer):
         model = Qualification
         fields = [
             'User_id',
+            'Lang',
             'Qualification'
         ]
 
@@ -71,6 +70,7 @@ class ExperienceSerializer(serializers.ModelSerializer):
         model = Experience
         fields = [
             'User_id',
+            'Lang',
             'Company',
             'Location',
             'Occupation',
@@ -84,6 +84,7 @@ class EducationSerializer(serializers.ModelSerializer):
         model = Education
         fields = [
             'User_id',
+            'Lang',
             'College',
             'Course',
             'Period',

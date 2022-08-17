@@ -8,7 +8,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 PRODUCTION = os.environ.get('DATABASE_URL') != None
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+#SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = 'TestEnv'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

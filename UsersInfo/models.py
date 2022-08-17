@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 
 class UserInfo(models.Model):
     User = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+    Lang = models.CharField(max_length=20)
     FirstName = models.CharField(max_length=200)
     LastName = models.CharField(max_length=200)
     BirthDate = models.DateField()
@@ -12,10 +13,7 @@ class UserInfo(models.Model):
     CPF = models.CharField(max_length=200)
     Citizenship = models.CharField(max_length=200)
     MaritalStatus = models.CharField(max_length=200)
-    Profession = models.CharField(max_length=200)
-    Education = models.CharField(max_length=500)
     About = models.CharField(max_length=1000)
-    Experience = models.CharField(max_length=200)
 
     def __str__(self):
         return self.User.username
@@ -47,6 +45,7 @@ class SocialMedia(models.Model):
 
 class Qualification(models.Model):
     User = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+    Lang = models.CharField(max_length=20)
     Qualification = models.CharField(max_length=500)
 
     def __str__(self):
@@ -63,6 +62,7 @@ class Skill(models.Model):
 
 class Experience(models.Model):
     User = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+    Lang = models.CharField(max_length=20)
     Company = models.CharField(max_length=200)
     Location = models.CharField(max_length=200)
     Occupation = models.CharField(max_length=200)
@@ -75,6 +75,7 @@ class Experience(models.Model):
 
 class Education(models.Model):
     User = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+    Lang = models.CharField(max_length=20)
     College = models.CharField(max_length=200)
     Course = models.CharField(max_length=200)
     Period = models.CharField(max_length=200)
