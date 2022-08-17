@@ -16,7 +16,7 @@ class UserInfo(models.Model):
     About = models.CharField(max_length=1000)
 
     def __str__(self):
-        return self.User.username
+        return f'{self.User.username} - {self.Lang}'
 
 
 class Address(models.Model):
@@ -49,7 +49,7 @@ class Qualification(models.Model):
     Qualification = models.CharField(max_length=500)
 
     def __str__(self):
-        return self.Qualification
+        return f'{self.Qualification} - {self.Lang}'
 
 
 class Skill(models.Model):
@@ -70,7 +70,7 @@ class Experience(models.Model):
     Period = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.Company
+        return f'{self.Company} - {self.Lang}'
 
 
 class Education(models.Model):
@@ -83,4 +83,4 @@ class Education(models.Model):
     Description = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.College
+        return f'{self.College} - {self.Lang}'
