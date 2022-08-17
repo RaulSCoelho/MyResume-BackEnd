@@ -48,7 +48,7 @@ def User(request, UserId):
         except model.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-    user = getItem(UserInfo, UserId)
+    users = getItem(UserInfo, UserId)
     address = getItem(Address, UserId)
     socialMedia = getItem(SocialMedia, UserId)
     qualification = getItem(Qualification, UserId)
@@ -57,7 +57,7 @@ def User(request, UserId):
     education = getItem(Education, UserId)
 
     if request.method == 'GET':
-        userInfoSerializer = UserInfoSerializer(user, many=True)
+        usersInfoSerializer = UserInfoSerializer(users, many=True)
         addressSerializer = AddressSerializer(address, many=True)
         socialMediaSerializer = SocialMediaSerializer(socialMedia, many=True)
         qualificationSerializer = QualificationSerializer(
@@ -67,7 +67,7 @@ def User(request, UserId):
         educationSerializer = EducationSerializer(education, many=True)
 
         return Response({
-            'user': userInfoSerializer.data,
+            'user': usersInfoSerializer.data,
             'address': addressSerializer.data,
             'socialMedias': socialMediaSerializer.data,
             'qualifications': qualificationSerializer.data,
@@ -81,17 +81,25 @@ def User(request, UserId):
             print(f'{key}: {value}')
 
     elif request.method == 'PUT':
+        
+        for user in users:
+            if user.Lang == request.data['user']['Lang']:
+                serializer = UserInfoSerializer(user, data=request.data['user'])
 
-        serializer = UserInfoSerializer(user, data=request.data['user'])
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if serializer.is_valid():
-            serializer.save()
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(serializer.data)
+                return Response(serializer.data)
 
     elif request.method == 'DELETE':
-        user.delete()
+        users.delete()
+        address.delete()
+        socialMedia.delete()
+        qualification.delete()
+        skill.delete()
+        experience.delete()
+        education.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 # endregion
