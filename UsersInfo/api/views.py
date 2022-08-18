@@ -42,19 +42,25 @@ def Users(request):
 @permission_classes([IsAuthenticatedOrReadOnly])
 def User(request, UserId):
 
-    def getItem(model, key):
+    def getItemById(model, key):
+        try:
+            return model.objects.get(id=key)
+        except model.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def getItemByUserId(model, key):
         try:
             return model.objects.filter(User_id=key)
         except model.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-    users = getItem(UserInfo, UserId)
-    address = getItem(Address, UserId)
-    socialMedias = getItem(SocialMedia, UserId)
-    qualifications = getItem(Qualification, UserId)
-    skills = getItem(Skill, UserId)
-    experience = getItem(Experience, UserId)
-    education = getItem(Education, UserId)
+    users = getItemByUserId(UserInfo, UserId)
+    address = getItemByUserId(Address, UserId)
+    socialMedias = getItemByUserId(SocialMedia, UserId)
+    qualifications = getItemByUserId(Qualification, UserId)
+    skills = getItemByUserId(Skill, UserId)
+    experience = getItemByUserId(Experience, UserId)
+    education = getItemByUserId(Education, UserId)
 
     if request.method == 'GET':
         usersInfoSerializer = UserInfoSerializer(users, many=True)
@@ -110,38 +116,69 @@ def User(request, UserId):
 
     elif request.method == 'PUT':
 
+        def update(model, serializer, new, field):
+            old = getItemById(model, new['id'])
+            customSerializer = serializer(old, data=new)
+
+            if customSerializer.is_valid():
+                customSerializer.save()
+                response[field] = customSerializer.data
+            else:
+                return Response(customSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         response = {}
 
-        def update(items, new, serializer, field):
-            for item in items:
-                try:
-                    if item.id == new['id']:
-                        customSerializer = serializer(item, data=new)
+        for [key, value] in request.data.items():
+            if key == 'user':
+                update(UserInfo, UserInfoSerializer, value, key)
 
-                        if customSerializer.is_valid():
-                            customSerializer.save()
-                            response[field] = customSerializer.data
-                            break
-                        else:
-                            return Response(customSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                except:
-                    pass
+            elif key == 'address':
+                update(Address, AddressSerializer, value, key)
 
-        update(users, request.data['user'], UserInfoSerializer, 'user')
-        update(address, request.data['address'], AddressSerializer, 'address')
-        update(socialMedias, request.data['socialMedias'],
-               SocialMediaSerializer, 'socialMedias')
-        update(qualifications, request.data['qualifications'],
-               QualificationSerializer, 'qualifications')
-        update(skills, request.data['skills'], SkillSerializer, 'skills')
-        update(experience, request.data['experience'],
-               ExperienceSerializer, 'experience')
-        update(education, request.data['education'],
-               EducationSerializer, 'education')
+            elif key == 'socialMedias':
+                update(SocialMedia, SocialMediaSerializer, value, key)
+
+            elif key == 'qualifications':
+                update(Qualification, QualificationSerializer, value, key)
+
+            elif key == 'skills':
+                update(Skill, SkillSerializer, value, key)
+
+            elif key == 'experience':
+                update(Experience, ExperienceSerializer, value, key)
+
+            elif key == 'education':
+                update(Education, EducationSerializer, value, key)
 
         return Response(response)
 
     elif request.method == 'DELETE':
-        users.delete()
+        
+        def delete(model, value):
+            item = getItemById(model, value)
+            item.delete()
+
+        for [key, value] in request.data.items():
+            if key == 'user':
+                users.delete()
+
+            elif key == 'address':
+                delete(Address, value)
+
+            elif key == 'socialMedias':
+                delete(SocialMedia, value)
+
+            elif key == 'qualifications':
+                delete(Qualification, value)
+
+            elif key == 'skills':
+                delete(Skill, value)
+
+            elif key == 'experience':
+                delete(Experience, value)
+
+            elif key == 'education':
+                delete(Education, value)
+        
         return Response(status=status.HTTP_204_NO_CONTENT)
 # endregion
