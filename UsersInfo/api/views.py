@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from ..models import UserInfo, Address, SocialMedia, Qualification, Skill, Experience, Education
 from .serializers import UserInfoSerializer, AddressSerializer, SocialMediaSerializer, QualificationSerializer, SkillSerializer, ExperienceSerializer, EducationSerializer
 from rest_framework.response import Response
@@ -50,19 +51,19 @@ def User(request, UserId):
 
     users = getItem(UserInfo, UserId)
     address = getItem(Address, UserId)
-    socialMedia = getItem(SocialMedia, UserId)
-    qualification = getItem(Qualification, UserId)
-    skill = getItem(Skill, UserId)
+    socialMedias = getItem(SocialMedia, UserId)
+    qualifications = getItem(Qualification, UserId)
+    skills = getItem(Skill, UserId)
     experience = getItem(Experience, UserId)
     education = getItem(Education, UserId)
 
     if request.method == 'GET':
         usersInfoSerializer = UserInfoSerializer(users, many=True)
         addressSerializer = AddressSerializer(address, many=True)
-        socialMediaSerializer = SocialMediaSerializer(socialMedia, many=True)
+        socialMediaSerializer = SocialMediaSerializer(socialMedias, many=True)
         qualificationSerializer = QualificationSerializer(
-            qualification, many=True)
-        skillSerializer = SkillSerializer(skill, many=True)
+            qualifications, many=True)
+        skillSerializer = SkillSerializer(skills, many=True)
         experienceSerializer = ExperienceSerializer(experience, many=True)
         educationSerializer = EducationSerializer(education, many=True)
 
@@ -77,29 +78,71 @@ def User(request, UserId):
         })
 
     elif request.method == 'POST':
+
+        def post(new, serializer):
+            customSerializer = serializer(data=new)
+            if customSerializer.is_valid():
+                customSerializer.save()
+                return customSerializer.data
+
         for [key, value] in request.data.items():
-            print(f'{key}: {value}')
+            if key == 'user':
+                response = post(value, UserInfoSerializer)
+
+            elif key == 'address':
+                response = post(value, AddressSerializer)
+
+            elif key == 'socialMedias':
+                response = post(value, SocialMediaSerializer)
+
+            elif key == 'qualifications':
+                response = post(value, QualificationSerializer)
+
+            elif key == 'skills':
+                response = post(value, SkillSerializer)
+
+            elif key == 'experience':
+                response = post(value, ExperienceSerializer)
+
+            elif key == 'education':
+                response = post(value, EducationSerializer)
+                
+        return Response(response, status=status.HTTP_201_CREATED)
 
     elif request.method == 'PUT':
-        
-        for user in users:
-            if user.Lang == request.data['user']['Lang']:
-                serializer = UserInfoSerializer(user, data=request.data['user'])
 
-                if serializer.is_valid():
-                    serializer.save()
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        response = {}
 
-                return Response(serializer.data)
+        def update(items, new, serializer, field):
+            for item in items:
+                try:
+                    if item.id == new['id']:
+                        customSerializer = serializer(item, data=new)
+
+                        if customSerializer.is_valid():
+                            customSerializer.save()
+                            response[field] = customSerializer.data
+                            break
+                        else:
+                            return Response(customSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                except:
+                    pass
+
+        update(users, request.data['user'], UserInfoSerializer, 'user')
+        update(address, request.data['address'], AddressSerializer, 'address')
+        update(socialMedias, request.data['socialMedias'],
+               SocialMediaSerializer, 'socialMedias')
+        update(qualifications, request.data['qualifications'],
+               QualificationSerializer, 'qualifications')
+        update(skills, request.data['skills'], SkillSerializer, 'skills')
+        update(experience, request.data['experience'],
+               ExperienceSerializer, 'experience')
+        update(education, request.data['education'],
+               EducationSerializer, 'education')
+
+        return Response(response)
 
     elif request.method == 'DELETE':
         users.delete()
-        address.delete()
-        socialMedia.delete()
-        qualification.delete()
-        skill.delete()
-        experience.delete()
-        education.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 # endregion
