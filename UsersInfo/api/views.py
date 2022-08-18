@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from ..models import UserInfo, Address, SocialMedia, Qualification, Skill, Experience, Education
 from .serializers import UserInfoSerializer, AddressSerializer, SocialMediaSerializer, QualificationSerializer, SkillSerializer, ExperienceSerializer, EducationSerializer
 from rest_framework.response import Response
