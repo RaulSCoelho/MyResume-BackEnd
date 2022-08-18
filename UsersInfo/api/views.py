@@ -155,7 +155,7 @@ def User(request, UserId):
     elif request.method == 'DELETE':
         
         def delete(model, value):
-            item = getItemById(model, value)
+            item = getItemById(model, value['id'])
             item.delete()
 
         for [key, value] in request.data.items():
